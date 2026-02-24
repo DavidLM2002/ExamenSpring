@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>BiblioBox</title>
+    <!-- Bootstrap 5.3.8 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark" th:fragment="navbar">
+    <div class="container">
+        <a class="navbar-brand" href="/">BiblioBox</a>
+        <div class="navbar-nav">
+            <a class="nav-link" th:href="@{/alumnos}">Alumnos</a>
+            <a class="nav-link" th:href="@{/prestamos}">Prestamos</a>
+            <a class="nav-link" th:href="@{/informes}">KPI Dashboard</a>
+        </div>
+    </div>
+</nav>
+
+</body>
+</html>
+
