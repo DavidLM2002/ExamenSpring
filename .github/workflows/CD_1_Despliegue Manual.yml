@@ -1,4 +1,4 @@
-name: Despliegue Manual
+name: Despliegue Manual 2.0
 
 on:
   workflow_dispatch:   # ← Activa el botón "Run workflow"
