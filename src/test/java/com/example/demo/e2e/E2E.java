@@ -1,9 +1,16 @@
 package com.example.demo.e2e;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import com.example.demo.entity.Naufrago;
+import com.example.demo.entity.Habilidad;
+import com.example.demo.repository.NaufragoRepository;
 
-import java.time.LocalDate;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+
+import com.example.demo.repository.HabilidadRepository;
+
+import tools.jackson.databind.ObjectMapper;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,12 +19,12 @@ import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.example.demo.entity.Habilidad;
-import com.example.demo.entity.Naufrago;
-import com.example.demo.repository.HabilidadRepository;
-import com.example.demo.repository.NaufragoRepository;
+import java.time.LocalDate;
 
-import tools.jackson.databind.ObjectMapper;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -76,10 +83,10 @@ class E2E {
                 .andExpect(status().isOk()); // Verificamos que devuelve codigo 200 
         
 		//6. Listamos los naufragos para verificar que el nuevo alumno aparece con sus habilidades
-        /*mockMvc.perform(get("/api/naufragos"))
+        mockMvc.perform(get("/api/naufragos"))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$", hasSize(greaterThanOrEqualTo(1))))
-				.andExpect(jsonPath("$[?(@.nombre == 'Pepe')].habilidades", hasSize(2)));*/
+				.andExpect(jsonPath("$[?(@.nombre == 'Pepe')].habilidades", hasSize(2)));
 
 
 		System.out.println("RESULTADO: El nuevo alumno 'Pepe' fue creado correctamente con sus habilidades asociadas.");
