@@ -1,4 +1,4 @@
-name: Despliegue Manual
+name: Despliegue Manual v2
 
 on:
   workflow_dispatch:   # ← Activa el botón "Run workflow"
@@ -34,6 +34,6 @@ jobs:
       - name: Dar permisos al wrapper de Maven
         run: chmod +x mvnw
 
-      # 4. Generar el paquete (sin tests si quieres que sea más rápido)
-      - name: Generar paquete
-        run: ./mvnw -B -DskipTests package
+      # 4. Ejecutar Tests en cada sistema operativo
+      - name: Ejecutar Tests en ${{ matrix.sistema_operativo }}
+        run: mvn -B test
