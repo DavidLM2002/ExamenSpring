@@ -1,0 +1,40 @@
+name: Generar Archivo WAR
+
+# El pipeline se activa tras completar el workflow del apartado A
+on:
+  workflow_run:
+    workflows: ["Despliegue Manual v3"] # Sustituye por el 'name' exacto del primer YAML
+    types:
+      - completed
+
+jobs:
+  build-war:
+    # Solo se ejecuta si el workflow anterior terminó con éxito
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Descargar el código
+      - name: Descargar código
+        uses: actions/checkout@v4
+
+      # 2. Configurar Java 21
+      - name: Configurar Java 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          check-latest: true
+          cache: 'maven'
+
+      # 3. Empaqueta la aplicación usando Maven
+      # El comando 'package' genera el .war omitiendo los tests para agilizar el despliegue
+      - name: Construir con Maven (Generar WAR)
+        run: mvn clean package -DskipTests
+
+      # 4. Sube el archivo WAR como artefacto para que esté disponible para el despliegue
+      - name: Guardar WAR como Artefacto
+        uses: actions/upload-artifact@v4
+        with:
+          name: aplicacion-war
+          path: target/*.war # Ruta estándar donde Maven genera el archivo
