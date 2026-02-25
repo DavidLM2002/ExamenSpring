@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Naufragos</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div th:replace="~{layout :: navbar}"></div>
+	<div class="container mt-4">
+        <div class="d-flex justify-content-between mb-4">
+            <h2>Lista de naufragos</h2>
+            <a th:href="@{/naufragos/nuevo}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Nuevo Naufrago
+            </a>
+        </div>
+        
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <table class="table table-hover align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Edad</th>
+                            <th>Sexo</th>
+                            <th>Isla</th>
+                            <th>Nacionalidad</th>
+                            <th>FechaRescate</th>
+                            <th>Habilidades</th>
+                            <th class="text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="a : ${naufragos}">
+                            <td th:text="${a.id}"></td>
+                            <td th:text="${a.nombre}" class="fw-bold"></td>
+                            <td><span class="badge bg-info text-dark" th:text="${a.edad}"></span></td>
+                            <td th:text="${a.sexo ?: 'Sin sexo'}"></td>
+                            <td th:text="${a.isla}"></td>
+                            <td th:text="${a.nacionalidad}"></td>
+                            <td th:text="${a.fechaRescate}"></td>
+                            <td>
+                                <span th:if="${#lists.isEmpty(a.habilidads)}" class="text-muted">Sin habilidades</span>
+                                <span th:each="h : ${a.habilidads}" class="badge bg-secondary me-1" th:text="${h.nombre}"></span>
+                            </td>
+                            <td class="text-center">
+                                <a th:href="@{/naufragos/editar/{id}(id=${a.id})}" class="btn btn-sm btn-warning">Editar</a>
+                                <a th:href="@{/naufragos/eliminar/{id}(id=${a.id})}" class="btn btn-sm btn-danger" 
+                                   onclick="return confirm('¿Estás seguro de eliminar este naufrago?')">Eliminar</a>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(naufragos)}">
+                            <td colspan="9" class="text-center text-muted">No hay naufragos registrados.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+</div>
+</body>
+</html>

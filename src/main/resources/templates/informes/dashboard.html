@@ -33,15 +33,15 @@
 <body>
     <div th:replace="~{layout :: navbar}"></div>
         
-        <h3 class="mb-4 text-center fw-bold text-dark">Panel de Control de Biblioteca</h3>
+        <h3 class="mb-4 text-center fw-bold text-dark">Panel de Control</h3>
 
         <div class="row g-4">
             <div class="col-xl-3 col-md-6">
                 <div class="card h-100">
-                    <div class="card-header text-primary">Alumnos por Curso</div>
+                    <div class="card-header text-primary">Naufragos por nacionalidad</div>
                     <div class="card-body">
                         <div class="chart-container">
-                            <canvas id="chartCursos"></canvas>
+                            <canvas id="chartNacionalidad"></canvas>
                         </div>
                     </div>
                 </div>
@@ -49,32 +49,10 @@
 
             <div class="col-xl-3 col-md-6">
                 <div class="card h-100">
-                    <div class="card-header text-success">Estado de Préstamos</div>
+                    <div class="card-header text-success">Naufragos por sexo</div>
                     <div class="card-body">
                         <div class="chart-container">
                             <canvas id="chartEstado"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-xl-3 col-md-6">
-                <div class="card h-100">
-                    <div class="card-header text-warning">Tendencia Mensual</div>
-                    <div class="card-body">
-                        <div class="chart-container">
-                            <canvas id="chartMeses"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-xl-3 col-md-6">
-                <div class="card h-100">
-                    <div class="card-header text-info">Top 5 Usuarios</div>
-                    <div class="card-body">
-                        <div class="chart-container">
-                            <canvas id="chartRadar"></canvas>
                         </div>
                     </div>
                 </div>
@@ -83,8 +61,7 @@
 
         <script th:inline="javascript">
             // Captura de datos de Spring Boot
-            const alumnosRaw = JSON.parse(/*[[${alumnosJson}]]*/ '[]');
-            const prestamosRaw = JSON.parse(/*[[${prestamosJson}]]*/ '[]');
+            const naufragosRaw = JSON.parse(/*[[${naufragosJson}]]*/ '[]');
 
             const configGlobal = {
                 maintainAspectRatio: false,
@@ -92,17 +69,17 @@
             };
 
             // 1. Gráfico de Cursos (Barras)
-            const countsCursos = alumnosRaw.reduce((acc, a) => {
-                acc[a.curso] = (acc[a.curso] || 0) + 1;
+            const countsNacionalidad = naufragosRaw.reduce((acc, a) => {
+                acc[a.nacionalidad] = (acc[a.nacionalidad] || 0) + 1;
                 return acc;
             }, {});
 
-            new Chart(document.getElementById('chartCursos'), {
+            new Chart(document.getElementById('chartNacionalidad'), {
                 type: 'bar',
                 data: {
-                    labels: Object.keys(countsCursos),
+                    labels: Object.keys(countsNacionalidad),
                     datasets: [{ 
-                        data: Object.values(countsCursos), 
+                        data: Object.values(countsNacionalidad), 
                         backgroundColor: '#4e73df' 
                     }]
                 },
@@ -110,68 +87,25 @@
             });
 
             // 2. Gráfico de Estado (Donut)
-            const devueltos = prestamosRaw.filter(p => p.devuelto).length;
-            const pendientes = prestamosRaw.length - devueltos;
+            const hombres = naufragosRaw.filter(p => p.sexo == "Hombre").length;
+            const mujeres = naufragosRaw.filter(p => p.sexo == "Mujer").length;
+            const otros = naufragosRaw.length - (hombres + mujeres);
+            
 
             new Chart(document.getElementById('chartEstado'), {
                 type: 'doughnut',
                 data: {
-                    labels: ['Devueltos', 'Pendientes'],
+                    labels: ['Hombre', 'Mujer', 'Otro'],
                     datasets: [{
-                        data: [devueltos, pendientes],
-                        backgroundColor: ['#1cc88a', '#e74a3b']
+                        data: [hombres, mujeres, otros],
+                        backgroundColor: ['#1cc88a', '#e74a3b', '#f6c23e']
                     }]
                 },
                 options: { maintainAspectRatio: false }
             });
 
-            // 3. Gráfico Mensual (Línea)
-            const countsMeses = new Array(12).fill(0);
-            const nombresMeses = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
-
-            prestamosRaw.forEach(p => {
-                const mes = new Date(p.fechaPrestamo).getMonth();
-                countsMeses[mes]++;
-            });
-
-            new Chart(document.getElementById('chartMeses'), {
-                type: 'line',
-                data: {
-                    labels: nombresMeses,
-                    datasets: [{ 
-                        data: countsMeses, 
-                        borderColor: '#f6c23e', 
-                        backgroundColor: 'rgba(246, 194, 62, 0.1)',
-                        fill: true,
-                        tension: 0.4
-                    }]
-                },
-                options: configGlobal
-            });
-
-            // 4. Gráfico Top 5 (Radar)
-            const ranking = prestamosRaw.reduce((acc, p) => {
-                acc[p.nombreAlumno] = (acc[p.nombreAlumno] || 0) + 1;
-                return acc;
-            }, {});
-
-            const sorted = Object.keys(ranking).sort((a,b) => ranking[b] - ranking[a]).slice(0,5);
-
-            new Chart(document.getElementById('chartRadar'), {
-                type: 'radar',
-                data: {
-                    labels: sorted,
-                    datasets: [{
-                        data: sorted.map(n => ranking[n]),
-                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                        borderColor: 'rgb(54, 162, 235)',
-                        fill: true
-                    }]
-                },
-                options: configGlobal
-            });
+            
         </script>
-    </div>
 
 </body>
 </html>

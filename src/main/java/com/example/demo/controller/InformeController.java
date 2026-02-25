@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -9,10 +10,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.example.demo.dto.AlumnoDTO;
-import com.example.demo.dto.PrestamoDTO;
-import com.example.demo.service.AlumnoService;
-import com.example.demo.service.PrestamoService;
+import com.example.demo.dto.NaufragoDTO;
+import com.example.demo.service.NaufragoService;
+import com.example.demo.service.HabilidadService;
 
 import tools.jackson.databind.ObjectMapper;
 
@@ -22,10 +22,7 @@ import tools.jackson.databind.ObjectMapper;
 public class InformeController {
 
     @Autowired
-    private AlumnoService alumnoService;
-
-    @Autowired
-    private PrestamoService prestamoService;
+    private NaufragoService naufragoService;
 
     @Autowired
     private ObjectMapper mapper;
@@ -34,31 +31,22 @@ public class InformeController {
     public String dashboard(Model model) throws Exception {
 
         // Mapeamos las entidades Alumno a DTOs limpios para el gráfico
-        List<AlumnoDTO> alumnos = alumnoService.listarTodos()
+        List<NaufragoDTO> naufragos = naufragoService.listarTodos()
                 .stream()
-                .map(a -> new AlumnoDTO(
+                .map(a -> new NaufragoDTO(
                         a.getId(),
                         a.getNombre(),
-                        a.getCurso(),
-                        a.getEmail()
+                        a.getEdad(),
+                        a.getSexo(),
+                        a.getIsla(),
+                        a.getNacionalidad(),
+                        a.getFechaRescate()
                 ))
                 .collect(Collectors.toList());
 
-        // Mapeamos las entidades Prestamo a DTOs (incluyendo fecha y estado)
-        List<PrestamoDTO> prestamos = prestamoService.listarTodos()
-                .stream()
-                .map(p -> new PrestamoDTO(
-                        p.getId(),
-                        p.getTituloLibro(),
-                        p.getFechaPrestamo(), // Asegúrate de que el DTO maneje bien la fecha
-                        p.isDevuelto(),
-                        p.getAlumno().getNombre() // Para el gráfico de Top Alumnos
-                ))
-                .collect(Collectors.toList());
 
         // Pasamos los JSON al modelo
-        model.addAttribute("alumnosJson", mapper.writeValueAsString(alumnos));
-        model.addAttribute("prestamosJson", mapper.writeValueAsString(prestamos));
+        model.addAttribute("naufragosJson", mapper.writeValueAsString(naufragos));
 
         return "informes/dashboard";
     }
